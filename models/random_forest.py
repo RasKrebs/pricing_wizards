@@ -1,7 +1,5 @@
-from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
-
-from helpers.model_helpers import hyperparameter_tuning
+from helpers.model_helpers import two_step_hyperparameter_tuning
 
 def run_model(model_config):
     """
@@ -18,8 +16,6 @@ def run_model(model_config):
 
     Returns:
     - results (dict): A dictionary containing the results of hyperparameter tuning using GridSearchCV and RandomizedSearchCV.
-        - 'GridSearch': A dictionary with the hyperparameter tuning results using GridSearchCV, as returned by hyperparameter_tuning.
-        - 'RandomSearch': A dictionary with the hyperparameter tuning results using RandomizedSearchCV, as returned by hyperparameter_tuning.
     """
 
     # Defines a set of values to explore during the hyperparameter tuning process
@@ -33,18 +29,7 @@ def run_model(model_config):
     # Create a Random Forest model
     rfr = RandomForestRegressor()
 
-    # Using GridSearchCV for hyperparameter tuning with RandomForestRegressor
-    grid_search = GridSearchCV(rfr, param_grid, scoring='neg_mean_squared_error', cv=5)
-    grid_search_output = hyperparameter_tuning(RandomForestRegressor, model_config, grid_search)
+    # Using param_grid for two step hyperparameter tuning with Random Forest
+    output = two_step_hyperparameter_tuning(rfr, model_config, param_grid)
 
-    # Using RandomizedSearchCV for hyperparameter tuning with RandomForestRegressor
-    random_search = RandomizedSearchCV(rfr, param_distributions=param_grid, n_iter=10, scoring='neg_mean_squared_error', cv=5, random_state=42)
-    random_search_output = hyperparameter_tuning(RandomForestRegressor, model_config, random_search)
-
-    # Storing the results of hyperparameter tuning in a dictionary
-    results = {
-        'GridSearch': grid_search_output,
-        'RandomSearch': random_search_output,
-    }
-
-    return results
+    return output
