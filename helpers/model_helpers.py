@@ -1,45 +1,49 @@
+from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error
 import numpy as np
 
-def hyperparameter_tuning(model_class, model_config, optimizer):
+def two_step_hyperparameter_tuning(model_class, model_config, param_grid):
     """
-    Perform hyperparameter tuning for a given machine learning model using the specified optimizer.
+    Perform two-step hyperparameter tuning using Random Search followed by Grid Search.
 
     Parameters:
-    - model_class (class): The machine learning model class (e.g., sklearn.ensemble.RandomForestRegressor).
-    - model_config (object): An object containing data and configurations for model training and testing.
-        - X (array-like): The feature matrix for the entire dataset.
-        - y (array-like): The target values for the entire dataset.
-        - X_train (array-like): The feature matrix for the training dataset.
-        - y_train (array-like): The target values for the training dataset.
-        - X_test (array-like): The feature matrix for the test dataset.
-        - y_test (array-like): The target values for the test dataset.
-    - optimizer (object): The hyperparameter optimization algorithm or tool (e.g., GridSearchCV).
+    - model_class (class): The machine learning model class (e.g., SVR).
+    - model_config (object): An object containing training and test data (X_train, y_train, X_test, y_test).
+    - param_grid (dict): The hyperparameter grid to search.
 
     Returns:
-    - output (dict): A dictionary containing the following information:
-        - 'params': The best hyperparameters determined by the optimizer.
-        - 'model': The trained model with the best hyperparameters.
-        - 'mse_mean_cv': The mean cross-validated mean squared error (MSE) on the training set.
-        - 'mse_test': The mean squared error (MSE) on the test set.
+    dict: A dictionary containing the results of the hyperparameter tuning:
+        - 'params': Best hyperparameters from Grid Search.
+        - 'model': Final trained model with the best hyperparameters.
+        - 'mse_mean_cv': Mean squared error obtained from cross-validation on the training set.
+        - 'mse_test': Mean squared error obtained on the test set.
     """
 
-    X = model_config.X
-    y = model_config.y
     X_train = model_config.X_train
     y_train = model_config.y_train
     X_test = model_config.X_test
     y_test = model_config.y_test
 
-    # Use optimizer for hyperparameter tuning
-    optimizer.fit(X, y)
+    random_search = RandomizedSearchCV(model_class, param_distributions=param_grid, n_iter=10, scoring='neg_mean_squared_error', cv=5, random_state=42)
 
-    # Get the best hyperparameters
-    best_params = optimizer.best_params_
+    # Use Random Search as first step of the hyperparameter tuning
+    random_search.fit(X_train, y_train)
 
-    # Train the model with the best hyperparameters
-    final_model = model_class(**best_params)
+    # Get the best hyperparameters from Random Search
+    best_params_random = random_search.best_params_
+
+    # Use the best hyperparameters from Random Search as initial values for Grid Search
+    grid_search_params = {key: [value] for key, value in best_params_random.items()}
+
+    grid_search = GridSearchCV(model_class, grid_search_params, scoring='neg_mean_squared_error', cv=5)
+    grid_search.fit(X_train, y_train)
+
+    # Get the best hyperparameters from Grid Search
+    best_params_grid = grid_search.best_params_
+
+    # Train the final model with the best hyperparameters from Grid Search
+    final_model = grid_search.best_estimator_
 
     # Evaluate the model using cross-validation and calculates the mean
     cv_scores = cross_val_score(final_model, X_train, y_train, scoring='neg_mean_squared_error', cv=5)
@@ -53,7 +57,7 @@ def hyperparameter_tuning(model_class, model_config, optimizer):
     mse_test = mean_squared_error(y_test, y_pred_test)
 
     output = {
-        'params': best_params,
+        'params': best_params_grid,
         'model': final_model,
         'mse_mean_cv': mse_mean_cv,
         'mse_test': mse_test
