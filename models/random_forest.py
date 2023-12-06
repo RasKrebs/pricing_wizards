@@ -27,9 +27,15 @@ def run_model(model_config):
     }
 
     # Create a Random Forest model
-    rfr = RandomForestRegressor()
+    rf = RandomForestRegressor()
 
     # Using param_grid for two step hyperparameter tuning with Random Forest
-    output = two_step_hyperparameter_tuning(rfr, model_config, param_grid)
+    output = two_step_hyperparameter_tuning(rf, model_config, param_grid)
+
+    # Get feature importances for Random Forest
+    feature_importances = output['model'].feature_importances_
+
+    # Add feature importances to output
+    output['feature_importances'] = feature_importances
 
     return output
