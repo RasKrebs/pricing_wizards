@@ -21,7 +21,7 @@ def run_model(model_config):
     """
 
     # Defines a set of values to explore during the hyperparameter tuning process
-    param_grid = {
+    param_grid: dict = {
         'C': [0.1, 1, 10],
         'gamma': [0.01, 0.1, 1],
         'degree': [2, 3, 4]
@@ -37,21 +37,21 @@ def run_model(model_config):
     svr_poly = SVR(kernel="poly")
 
     # Using param_grid for two step hyperparameter tuning with Support Vector Regression
-    output_linear = two_step_hyperparameter_tuning(svr_linear, model_config, param_grid)
-    output_rbf = two_step_hyperparameter_tuning(svr_rbf, model_config, param_grid)
-    output_poly = two_step_hyperparameter_tuning(svr_poly, model_config, param_grid)
+    output_linear: dict = two_step_hyperparameter_tuning(svr_linear, model_config, param_grid)
+    output_rbf: dict = two_step_hyperparameter_tuning(svr_rbf, model_config, param_grid)
+    output_poly: dict = two_step_hyperparameter_tuning(svr_poly, model_config, param_grid)
 
      # Get coefficients for linear kernel SVR
-    coefficients = output_linear['model'].coef_
+    coefficients: list = output_linear['model'].coef_
 
     # Calculate feature importances with permutation importance
-    feature_importances = permutation_importance(output_linear['model'], model_config.X, model_config.y, scoring='neg_mean_squared_error')
+    feature_importances: list = permutation_importance(output_linear['model'], model_config.X, model_config.y, scoring='neg_mean_squared_error')
 
     # Add feature importances to output
-    output_linear['feature_importances'] = feature_importances.importances
+    output_linear['feature_importances']: list = feature_importances.importances
 
-    # Generate output
-    output = {
+    # Generate output with model label
+    output: dict = {
         'SVR Linear': output_linear,
         'SVR RBF': output_rbf,
         'SVR Polynomial': output_poly,

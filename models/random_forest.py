@@ -19,7 +19,7 @@ def run_model(model_config):
     """
 
     # Defines a set of values to explore during the hyperparameter tuning process
-    param_grid = {
+    param_grid: dict = {
         'n_estimators': [50, 100, 200],
         'max_depth': [None, 10, 20],
         'min_samples_split': [2, 5, 10],
@@ -30,12 +30,19 @@ def run_model(model_config):
     rf = RandomForestRegressor()
 
     # Using param_grid for two step hyperparameter tuning with Random Forest
-    output = two_step_hyperparameter_tuning(rf, model_config, param_grid)
+    output_rf: dict = two_step_hyperparameter_tuning(rf, model_config, param_grid)
+
+    print(output_rf['model'])
 
     # Get feature importances for Random Forest
-    feature_importances = output['model'].feature_importances_
+    feature_importances: list = output_rf['model'].feature_importances_
 
     # Add feature importances to output
-    output['feature_importances'] = feature_importances
+    output_rf['feature_importances']: list = feature_importances
+
+    # Generate output with model label
+    output: dict = {
+        'Random Forest': output_rf
+    }
 
     return output
