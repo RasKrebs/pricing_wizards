@@ -31,32 +31,34 @@ def two_step_hyperparameter_tuning(model_class, model_config, param_grid):
     random_search.fit(X_train, y_train)
 
     # Get the best hyperparameters from Random Search
-    best_params_random = random_search.best_params_
+    best_params_random: list = random_search.best_params_
 
     # Use the best hyperparameters from Random Search as initial values for Grid Search
-    grid_search_params = {key: [value] for key, value in best_params_random.items()}
+    grid_search_params: dict = {
+        key: [value] for key, value in best_params_random.items()
+    }
 
     grid_search = GridSearchCV(model_class, grid_search_params, scoring='neg_mean_squared_error', cv=5)
     grid_search.fit(X_train, y_train)
 
     # Get the best hyperparameters from Grid Search
-    best_params_grid = grid_search.best_params_
+    best_params_grid: list = grid_search.best_params_
 
     # Train the final model with the best hyperparameters from Grid Search
     final_model = grid_search.best_estimator_
 
     # Evaluate the model using cross-validation and calculates the mean
-    cv_scores = cross_val_score(final_model, X_train, y_train, scoring='neg_mean_squared_error', cv=5)
-    mse_mean_cv = np.mean(cv_scores)
+    cv_scores: list = cross_val_score(final_model, X_train, y_train, scoring='neg_mean_squared_error', cv=5)
+    mse_mean_cv: float = np.mean(cv_scores)
 
     # Train the final model on the entire training set
     final_model.fit(X_train, y_train)
 
     # Evaluate the final model on the test set
     y_pred_test = final_model.predict(X_test)
-    mse_test = mean_squared_error(y_test, y_pred_test)
+    mse_test: float = mean_squared_error(y_test, y_pred_test)
 
-    output = {
+    output: dict = {
         'params': best_params_grid,
         'model': final_model,
         'mse_mean_cv': mse_mean_cv,
@@ -64,3 +66,4 @@ def two_step_hyperparameter_tuning(model_class, model_config, param_grid):
     }
 
     return output
+
