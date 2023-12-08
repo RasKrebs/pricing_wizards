@@ -1,24 +1,35 @@
-from preprocessing import run_preprocessing
-from prediction import run_predictions
-from statistics import run_statistics
-from clustering import run_clustering
+import pandas as pd
+from typing import Type
+from sklearn.model_selection import train_test_split
+from sklearn.utils import Bunch
 
-class MLModelConfig:
-    def __init__(self, X, y, X_train, X_test, y_train, y_test):
-        self.X = X
-        self.y = y
-        self.X_train = X_train
-        self.X_test = X_test
-        self.y_train = y_train
-        self.y_test = y_test
+from utils.object import MLModelConfig
+from scripts.prediction import main as main_prediction
+from scripts.preprocessing import main as main_preprocessing
+from scripts.feature_importance import main as main_feature_importance
 
 if __name__ == '__main__':
-    run_preprocessing()
+    ## UNCOMMENT THIS LINES IF YOU WANT TO TEST WITH A SAMPLE.CSV
+    # df = pd.read_csv('sample.csv')
 
-    run_statistics()
+    # df = df.sample(frac=0.001, replace=True, random_state=1)
 
-    run_clustering()
+    # # Define categorical features
+    # categorical_features = ['brand_name', 'category_name']
 
-    model_config: object = example_method()
+    # # Extract features and target variable
+    # X = df[categorical_features]
+    # y = df['listing_price']
 
-    run_predictions(model_config)
+    # # Split the data
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # # Create a configuration object
+    # model_config = MLModelConfig(X, y, X_train, X_test, y_train, y_test)
+
+    main_preprocessing() # TODO
+
+    # Running predictions
+    prediction_results: Type[Bunch] = main_prediction(model_config)
+
+    main_feature_importance(prediction_results)
