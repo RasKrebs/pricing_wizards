@@ -3,8 +3,8 @@ from sklearn.utils import Bunch
 
 from scripts.svm import main as run_svm
 from scripts.random_forest import main as run_rf
-from scripts.feature_importance import rank_feature_importances
 from utils.object import MLModelConfig
+from utils.prediction import plot_actual_predicted, plot_residuals
 
 def main(model_config: MLModelConfig) -> Type[Bunch]:
     """
@@ -28,6 +28,10 @@ def main(model_config: MLModelConfig) -> Type[Bunch]:
         svm = svm_results.values(),
         rf = rf_results.values()
     )
+
+    # Generate visualizations
+    plot_actual_predicted(results, model_config.y_test)
+    plot_residuals(results, model_config.y_test)
 
     return results
 

@@ -1,25 +1,10 @@
 from typing import Type
-import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.utils import Bunch
-
-import pandas as pd
 
 from utils.object import MLModelConfig
 from utils.prediction import two_step_hyperparameter_tuning
 from utils.prediction import print_prediction_summary
-
-
-# def generate_visualisations(model_config: MLModelConfig, y_pred: list):
-#     y_true = model_config.y_test
-
-#     # Generate plot for actual vs. predicted
-#     plt.scatter(y_true, y_pred)
-#     plt.plot([min(y_true), max(y_true)], [min(y_true), max(y_true)], linestyle='--', color='red', linewidth=2)
-#     plt.xlabel('Actual')
-#     plt.ylabel('Predicted')
-#     plt.title('Actual vs. Predicted')
-#     plt.show()
 
 def main(model_config: MLModelConfig) -> Type[Bunch]:
     """
