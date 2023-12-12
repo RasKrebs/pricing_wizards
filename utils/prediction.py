@@ -1,5 +1,10 @@
+import os
 import numpy as np
 import time
+import math
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.base import BaseEstimator
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -114,7 +119,7 @@ def two_step_hyperparameter_tuning(model_class: Type[BaseEstimator], model_confi
 
     return output
 
-def print_prediction_summary(label: str, y_true: list, y_pred: list) -> None:
+def print_prediction_summary(label: str, y_true: pd.Series, y_pred: pd.Series) -> None:
     """
     Print a summary of regression evaluation metrics.
 
@@ -145,3 +150,110 @@ def print_prediction_summary(label: str, y_true: list, y_pred: list) -> None:
     ]
 
     print(tabulate(table, headers=[f"Metric ({label})", "Value"], tablefmt="pretty", numalign="right", stralign="right", colalign=("left", "right")))
+
+def plot_actual_predicted(results: Type[Bunch], y_test: pd.Series) -> None:
+    """
+    Generate scatter plots for actual vs. predicted values for each model in the results.
+
+    Parameters:
+    - results (Type[Bunch]): A nested dictionary containing model results. Each model should have a 'y_pred' attribute
+                            representing predicted values and a 'label' attribute for identification.
+    - y_test (pd.Series): The actual values for the test set.
+
+    Returns:
+    None
+    """
+
+    models = [model for models in results.values() for model in models]
+
+    num_models = len(models)
+    num_cols = 2
+    num_rows = math.ceil(num_models / num_cols)
+
+    fig, axs = plt.subplots(num_rows, num_cols, figsize=(18, 6*num_rows), tight_layout=True)
+    axs = axs.flatten()
+
+    for i, model in enumerate(models):
+        # Create scatter plots for test set
+        axs[i].scatter(y_test, model.y_pred, alpha=0.25)
+        axs[i].plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k', lw=1)
+        axs[i].set_title(model.label)
+        axs[i].set_xlabel('Actual Values')
+        axs[i].set_ylabel('Predicted Values')
+
+    plt.suptitle("Actual vs. Predicted values by model")
+
+    # Save the plot
+    if not os.path.exists("visualization"):
+        os.makedirs("visualization")
+
+    fig.savefig("visualization/plot_actual_predicted")
+
+def plot_residuals(results: Type[Bunch], y_test: pd.Series):
+    """
+    Generate scatter plots of residuals for each model in the results.
+
+    Parameters:
+    - results (Type[Bunch]): A nested dictionary containing model results. Each model should have a 'y_pred' attribute
+                            representing predicted values and a 'label' attribute for identification.
+    - y_test (pd.Series): The actual values for the test set.
+
+    Returns:
+    None
+    """
+
+    models = [model for models in results.values() for model in models]
+
+    num_models = len(models)
+    num_cols = 2
+    num_rows = math.ceil(num_models / num_cols)
+
+    fig, axs = plt.subplots(num_rows, num_cols, figsize=(18, 6*num_rows), tight_layout=True)
+
+    for i, model in enumerate(models):
+        # Calculate residuals
+        prediction_error = y_test.iloc[i] - model.y_pred
+
+        # Extract the subplot for the current model
+        row = i // num_cols
+        col = i % num_cols
+
+        # Plot the scatter plot on the specific subplot
+        axs[row, col].scatter(model.y_pred, prediction_error, alpha=0.5)
+        plt.axhline(y=0, color='r', linestyle='--')
+        axs[row, col].set_title(model.label)
+        axs[row, col].set_xlabel('Predicted Values')
+        axs[row, col].set_ylabel('Prediction Errors')
+
+    plt.suptitle("Residual values by model")
+
+    # Save the plot
+    if not os.path.exists("visualization"):
+        os.makedirs("visualization")
+
+    fig.savefig("visualization/plot_residuals")
+
+def plot_feature_importances(ranked_feature_importances: pd.DataFrame) -> None:
+    """
+    Plot bar charts for average feature importances.
+
+    Parameters:
+    - ranked_feature_importances (pd.DataFrame): DataFrame with ranked feature importances.
+
+    Returns:
+    None
+    """
+    fig, ax = plt.subplots(tight_layout=True)
+
+    # Bar plot for average feature importances
+    sns.barplot(x=ranked_feature_importances.index, y=ranked_feature_importances['average'], hue=ranked_feature_importances.index, legend=False)
+    plt.axhline(y=0, color='k', linestyle='--', linewidth=1)
+    ax.set_title('Average Feature Importances')
+    ax.set_xlabel('Average Importance')
+    ax.set_ylabel('Features')
+
+    # Save the plot
+    if not os.path.exists("visualization"):
+        os.makedirs("visualization")
+
+    fig.savefig("visualization/plot_feature_importances")

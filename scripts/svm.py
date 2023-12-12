@@ -1,5 +1,4 @@
 from typing import Type
-import matplotlib.pyplot as plt
 from sklearn.svm import SVR
 from utils.prediction import two_step_hyperparameter_tuning
 from sklearn.utils import Bunch
@@ -7,17 +6,6 @@ from sklearn.utils import Bunch
 from utils.object import MLModelConfig
 from utils.prediction import two_step_hyperparameter_tuning
 from utils.prediction import print_prediction_summary
-
-# def generate_visualisations(model_config, y_pred_test):
-#     y_test = model_config.y_test
-
-#     # Generate plot for actual vs. predicted
-#     plt.scatter(y_test, y_pred_test)
-#     plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], linestyle='--', color='red', linewidth=2)
-#     plt.xlabel('Actual')
-#     plt.ylabel('Predicted')
-#     plt.title('Actual vs. Predicted')
-#     plt.show()
 
 def main(model_config: MLModelConfig) -> Type[Bunch]:
     """
