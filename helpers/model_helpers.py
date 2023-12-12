@@ -19,7 +19,7 @@ def two_step_hyperparameter_tuning(model_class, model_config, param_grid):
         - 'mse_mean_cv': Mean squared error obtained from cross-validation on the training set.
         - 'mse_test': Mean squared error obtained on the test set.
     """
-
+    
     X_train = model_config.X_train
     y_train = model_config.y_train
     X_test = model_config.X_test
