@@ -15,6 +15,8 @@ print('Training model:', args.name)
 # Load data
 data = PricingWizardDataset()
 
+#### BASE_LINEAR_REGRESSION ####
+
 if args.name == 'base_regression':
     # Apply data preparation
     print('Applying data preparation...')    
@@ -36,3 +38,7 @@ if args.name == 'base_regression':
     # Save model
     path = 'models/pickled_models/base_regression.pkl'
     save_model(results, path)
+
+data.reset_dataset()
+
+#### New Model ####
