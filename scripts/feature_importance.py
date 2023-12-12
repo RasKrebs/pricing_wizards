@@ -1,6 +1,7 @@
 import pandas as pd
 from typing import Type
 from sklearn.utils import Bunch
+from utils.prediction import plot_feature_importances
 
 def rank_feature_importances(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -48,5 +49,8 @@ def main(prediction_results: Type[Bunch]) -> pd.DataFrame:
 
     # Ranking the feature importances
     ranked_feature_importances = rank_feature_importances(feature_importances_df)
+
+    # Generate visualization
+    plot_feature_importances(ranked_feature_importances)
 
     return ranked_feature_importances
