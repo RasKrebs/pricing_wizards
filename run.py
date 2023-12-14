@@ -1,35 +1,44 @@
-import pandas as pd
+# Data Manipulation
 from typing import Type
-from sklearn.model_selection import train_test_split
+
+# Scikit learn
 from sklearn.utils import Bunch
 
-from utils.object import MLModelConfig
-from scripts.prediction import main as main_prediction
-from scripts.preprocessing import main as main_preprocessing
-from scripts.feature_importance import main as main_feature_importance
+# Load helpers and custom dataset class
+from utils.Dataloader import PricingWizardDataset
+from utils.Prediction import Prediction
+from utils.FeatureImportance import FeatureImportance
+from utils.BaseRegression import BaseRegression
 
 if __name__ == '__main__':
-    ## UNCOMMENT THIS LINES IF YOU WANT TO TEST WITH A SAMPLE.CSV
-    # df = pd.read_csv('sample.csv')
+    #### PREPROCESSING - TODO ####
 
-    # df = df.sample(frac=0.001, replace=True, random_state=1)
+    # Get data
+    data = PricingWizardDataset()
 
-    # # Define categorical features
-    # categorical_features = ['brand_name', 'category_name']
+    #### LINEAR_REGRESSION ####
 
-    # # Extract features and target variable
-    # X = df[categorical_features]
-    # y = df['listing_price']
+    linear_regression = BaseRegression(data)
+    linear_regression.run()
 
-    # # Split the data
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    #### PREDICTION (SVM + RANDOM FOREST) ####
 
-    # # Create a configuration object
-    # model_config = MLModelConfig(X, y, X_train, X_test, y_train, y_test)
+    # Working with a sample
+    ## COMMENT the following line if you don't want to work with a sample
+    data.df = data.df.sample(frac=0.003, replace=True, random_state=1)
 
-    main_preprocessing() # TODO
+    # Define features to work with
+    features = ['listing_price', 'brand_name', 'category_name', 'condition_name', 'viewed_count', 'subcategory_name']
 
-    # Running predictions
-    prediction_results: Type[Bunch] = main_prediction(model_config)
+    # Use only selected features
+    data.df = data.df[features]
 
-    main_feature_importance(prediction_results)
+    # Running SVM and Random Forest
+    prediction = Prediction(data)
+    prediction_results = prediction.run()
+
+    # Feature Importance
+    feature_importance = FeatureImportance(prediction_results)
+
+    # Ranking feature importances
+    feature_importance.rank()
