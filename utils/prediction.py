@@ -32,9 +32,9 @@ class Prediction:
         )
 
     def _transform_data(self):
-        # Using a sample for testing. If you want to work with the entire dataset, use the following line
-        # self.data.df = base_regression_pipeline(self.data.df)
-        self.data.df = base_regression_pipeline(self.data.df).sample(frac=0.001, replace=True, random_state=1)
+        self.data.apply_function(base_regression_pipeline)
+        # Using a sample for testing. If you want to work with the entire dataset, just the line below
+        self.data.df = self.data.df.sample(frac=0.001, replace=True, random_state=1)
 
     def run(self):
 
@@ -55,5 +55,7 @@ class Prediction:
         # plot_residuals(results, self.y_test)
         # plot_model_evaluation(results)
         # plot_training_time(results)
+
+        self.data.reset_dataset()
 
         return results
