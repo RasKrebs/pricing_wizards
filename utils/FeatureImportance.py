@@ -26,6 +26,11 @@ class FeatureImportance():
         # Transform the feature importances to a pandas dataframe
         self.feature_importances_df = pd.DataFrame({regressor: dict(feature_importances[regressor]) for regressor in feature_importances})
 
+        print("+-------------------------+-----------+")
+        print("PERMUTATION IMPORTANCE FROM FEATURES")
+        print("+-------------------------+-----------+")
+        print(self.feature_importances_df)
+
     def rank(self) -> pd.DataFrame:
         # Calculate mean for each row (feature)
         self.feature_importances_df['average'] = self.feature_importances_df.mean(axis=1)
