@@ -39,14 +39,14 @@ class Prediction:
     def run(self):
 
         # Running SVM
-        # svm_results: Type[Bunch] = run_svm(self)
+        svm_results: Type[Bunch] = run_svm(self)
 
         # Running Random Forest
         rf_results: Type[Bunch] = run_rf(self)
 
         # Generating combined results
         results: Type[Bunch] = Bunch(
-            # svm = svm_results.values(),
+            svm = svm_results.values(),
             rf = rf_results.values()
         )
 
