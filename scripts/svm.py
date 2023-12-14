@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 # Data Manipulation
 from typing import Type
 
