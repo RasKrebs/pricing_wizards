@@ -8,8 +8,7 @@ from sklearn.svm import SVR
 from sklearn.utils import Bunch
 
 # Load helpers and custom dataset class
-from utils.helpers import two_step_hyperparameter_tuning
-from utils.helpers import print_prediction_summary
+from utils.helpers import two_step_hyperparameter_tuning, print_prediction_summary, save_model
 
 def run_svm(prediction_instance: Type["Prediction"]) -> Type[Bunch]:
     """
@@ -24,11 +23,10 @@ def run_svm(prediction_instance: Type["Prediction"]) -> Type[Bunch]:
     """
 
     # Defines a set of values to explore during the hyperparameter tuning process
-    param_grid: dict = {
-        'preprocessor__cat__handle_unknown': ['ignore'],
-        'regressor__C': [0.1, 1, 10],
-        'regressor__gamma': [0.01, 0.1, 1],
-        'regressor__degree': [2, 3, 4]
+    param_dist: dict = {
+        'C': [0.1, 1, 10],
+        'gamma': [0.01, 0.1, 1],
+        'degree': [2, 3, 4]
     }
 
     # Create an SVR linear model
@@ -41,9 +39,9 @@ def run_svm(prediction_instance: Type["Prediction"]) -> Type[Bunch]:
     svr_poly = SVR(kernel="poly")
 
     # Using param_grid for two step hyperparameter tuning with Support Vector Regression
-    output_linear: Type[Bunch] = two_step_hyperparameter_tuning(svr_linear, prediction_instance, param_grid)
-    output_rbf: Type[Bunch] = two_step_hyperparameter_tuning(svr_rbf, prediction_instance, param_grid)
-    output_poly: Type[Bunch] = two_step_hyperparameter_tuning(svr_poly, prediction_instance, param_grid)
+    output_linear: Type[Bunch] = two_step_hyperparameter_tuning(svr_linear, prediction_instance, param_dist)
+    output_rbf: Type[Bunch] = two_step_hyperparameter_tuning(svr_rbf, prediction_instance, param_dist)
+    output_poly: Type[Bunch] = two_step_hyperparameter_tuning(svr_poly, prediction_instance, param_dist)
 
     # Add labels to outputs
     output_linear.label = 'SVR Linear'
@@ -57,8 +55,12 @@ def run_svm(prediction_instance: Type["Prediction"]) -> Type[Bunch]:
         polynomial = output_poly
     )
 
-    # Printing a summary of the results
-    for label, regressor in output_svm.items():
-        print_prediction_summary(f"SVM {label}", prediction_instance.y_test, regressor.y_pred)
+    for label, model in output_svm.items():
+        path = f'models/pickled_models/prediction_{"_".join(model.label.lower().split())}.pkl'
+        # Saving model
+        save_model(model, path)
+
+        # Printing a summary of the results
+        print_prediction_summary(f"SVM {label}", prediction_instance.y_test, model.y_pred)
 
     return output_svm

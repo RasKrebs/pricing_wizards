@@ -14,15 +14,12 @@ import seaborn as sns
 
 # Scikit learn
 from sklearn.base import BaseEstimator
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
 from sklearn.inspection import permutation_importance
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV, cross_val_score
 from sklearn.metrics import mean_squared_error, explained_variance_score, mean_absolute_error, r2_score, mean_squared_log_error, median_absolute_error
 from sklearn.utils import Bunch
 
-def save_model(dictionary, path):
+def save_model(dictionary, path) -> None:
     model = dictionary['model']
     if model is not None:
         with open(path, 'wb') as file:
@@ -63,16 +60,16 @@ def print_prediction_summary(label: str, y_true: pd.Series, y_pred: pd.Series) -
 
     print(tabulate(table, headers=[f"Metric ({label})", "Value"], tablefmt="pretty", numalign="right", stralign="right", colalign=("left", "right")))
 
-def two_step_hyperparameter_tuning(model_class: Type[BaseEstimator],
+def two_step_hyperparameter_tuning(model: Type[BaseEstimator],
                                    prediction_instance: Type["Prediction"],
-                                   param_grid: dict) -> Type[Bunch]:
+                                   param_dist: dict) -> Type[Bunch]:
     """
     Perform two-step hyperparameter tuning using Random Search followed by Grid Search.
 
     Parameters:
-    - model_class (BaseEstimator): The machine learning model class (e.g., SVR).
-    - prediction_instance (Prediction): An object containing training and test data (X_train, y_train, X_test, y_test).
-    - param_grid (dict): The hyperparameter grid to search.
+    - model (BaseEstimator): The machine learning model class (e.g., SVR).
+    - prediction_instance (Prediction): An object containing training and test data.
+    - param_dist (dict): The hyperparameter grid to search.
 
     Returns:
     Bunch: A Bunch containing the results of the hyperparameter tuning
@@ -84,33 +81,15 @@ def two_step_hyperparameter_tuning(model_class: Type[BaseEstimator],
     X_test = prediction_instance.X_test
     y_test = prediction_instance.y_test
 
-    # Define categorical features
-    categorical_features = X_val.columns.tolist()
-
-    # Create a column transformer for one-hot encoding
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
-        ],
-        remainder='passthrough'
-    )
-
-    # Create a pipeline with named steps
-    pipeline = Pipeline([
-        ('preprocessor', preprocessor),
-        ('regressor', model_class)
-    ])
-
+    # Use Random Search as first step of the hyperparameter tuning
     random_search = RandomizedSearchCV(
-        pipeline,
-        param_distributions=param_grid,
+        model,
+        param_distributions=param_dist,
         n_iter=10,
         scoring='neg_mean_squared_error',
         cv=5,
         random_state=42
     )
-
-    # Use Random Search as first step of the hyperparameter tuning
     random_search.fit(X_train, y_train)
 
     # Get the best hyperparameters from Random Search
@@ -122,8 +101,8 @@ def two_step_hyperparameter_tuning(model_class: Type[BaseEstimator],
     }
 
     grid_search = GridSearchCV(
-        pipeline,
-        grid_search_params,
+        model,
+        param_grid=grid_search_params,
         scoring='neg_mean_squared_error',
         cv=5
     )
@@ -137,7 +116,7 @@ def two_step_hyperparameter_tuning(model_class: Type[BaseEstimator],
 
     # Evaluate the model using cross-validation and calculates the mean
     cv_scores: list = cross_val_score(final_model, X_train, y_train, scoring='neg_mean_squared_error', cv=5)
-    mse_mean_cv: float = np.mean(cv_scores)
+    mse_mean_cv: float = -np.mean(cv_scores)
 
     # Train the final model on the entire training set, measuring the training time in seconds
     start_time = time.time()
@@ -154,7 +133,7 @@ def two_step_hyperparameter_tuning(model_class: Type[BaseEstimator],
     # Calculate permutation importances for the regressor
     feature_importances = permutation_importance(final_model, X_test, y_test, n_repeats=10, random_state=42).importances_mean
 
-    output: type[Bunch] = Bunch(
+    output: Type[Bunch] = Bunch(
         params = best_params_grid,
         model = final_model,
         feature_importances = list(zip(X_val.columns, feature_importances)),
@@ -189,7 +168,6 @@ def plot_actual_predicted(results: Type[Bunch], y_test: pd.Series) -> None:
     axs = axs.flatten()
 
     for i, model in enumerate(models):
-        # Create scatter plots for test set
         axs[i].scatter(y_test, model.y_pred, alpha=0.25)
         axs[i].plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k', lw=1)
         axs[i].set_title(model.label)
@@ -198,13 +176,9 @@ def plot_actual_predicted(results: Type[Bunch], y_test: pd.Series) -> None:
 
     plt.suptitle("Actual vs. Predicted values by model")
 
-    # Save the plot
-    if not os.path.exists("visualization"):
-        os.makedirs("visualization")
+    save_plot(fig, "visualization/plot_actual_predicted")
 
-    fig.savefig("visualization/plot_actual_predicted")
-
-def plot_residuals(results: Type[Bunch], y_test: pd.Series):
+def plot_residuals(results: Type[Bunch], y_test: pd.Series) -> None:
     """
     Generate scatter plots of residuals for each model in the results.
 
@@ -242,11 +216,29 @@ def plot_residuals(results: Type[Bunch], y_test: pd.Series):
 
     plt.suptitle("Residual values by model")
 
-    # Save the plot
-    if not os.path.exists("visualization"):
-        os.makedirs("visualization")
+    save_plot(fig, "visualization/plot_residuals")
 
-    fig.savefig("visualization/plot_residuals")
+def plot_model_evaluation(results: Type[Bunch]) -> None:
+    regressor_names = [result.label for results in results.values() for result in results]
+
+    mse_mean_cv_values = [result.mse_mean_cv for results in results.values() for result in results]
+    mse_test_values = [result.mse_test for results in results.values() for result in results]
+
+    bar_width = 0.35
+    index = range(len(regressor_names))
+
+    fig, ax = plt.subplots(tight_layout=True)
+    bar1 = ax.bar(index, mse_mean_cv_values, bar_width, label='MSE Mean CV')
+    bar2 = ax.bar([i + bar_width for i in index], mse_test_values, bar_width, label='MSE Test')
+
+    ax.set_xlabel('Regressor')
+    ax.set_ylabel('Mean Squared Error (MSE)')
+    ax.set_title('MSE Mean CV and MSE Test for Each Regressor')
+    ax.set_xticks([i + bar_width / 2 for i in index])
+    ax.set_xticklabels(regressor_names)
+    ax.legend()
+
+    save_plot(fig, "visualization/plot_model_evaluation")
 
 def plot_feature_importances(feature_importances: pd.DataFrame) -> None:
     """
@@ -266,10 +258,24 @@ def plot_feature_importances(feature_importances: pd.DataFrame) -> None:
     ax.set_title('Average Feature Importances')
     ax.set_xlabel('Features')
     ax.set_ylabel('Average Importance')
-    ax.tick_params(axis='x', labelsize=8, rotation=45)
+    ax.tick_params(axis='x', labelsize=8)
 
-    # Save the plot
+    save_plot(fig, "visualization/plot_feature_importances")
+
+def plot_training_time(results: Type[Bunch]) -> None:
+    regressor_names = [result.label for results in results.values() for result in results]
+    training_times = [result.training_time for results in results.values() for result in results]
+
+    fig, ax = plt.subplots(tight_layout=True)
+    ax.bar(regressor_names, training_times, color='blue')
+    ax.set_xlabel('Regressor')
+    ax.set_ylabel('Training Time (s)')
+    ax.set_title('Training Time Comparison for Different Regressors')
+
+    save_plot(fig, "visualization/plot_training_time")
+
+def save_plot(fig, path) -> None:
     if not os.path.exists("visualization"):
         os.makedirs("visualization")
 
-    fig.savefig("visualization/plot_feature_importances")
+    fig.savefig(path)

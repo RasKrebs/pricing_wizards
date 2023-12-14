@@ -8,7 +8,8 @@ from sklearn.utils import Bunch
 from scripts.svm import run_svm
 from scripts.random_forest import run_rf
 from utils.Dataloader import PricingWizardDataset
-from utils.helpers import plot_actual_predicted, plot_residuals
+from utils.helpers import plot_actual_predicted, plot_residuals, plot_model_evaluation, plot_training_time
+from utils.DataTransformation import base_regression_pipeline
 
 class Prediction:
     def __init__(self,
@@ -17,28 +18,42 @@ class Prediction:
         # Setting values
         self.data = data
 
-        # Define indenpendent variables
-        independent_variables = ['brand_name', 'category_name', 'condition_name', 'viewed_count', 'subcategory_name']
+        # Encoding the data
+        self._transform_data()
 
         # Get train and test data
-        self.X_train, self.X_test, self.X_val, self.y_train, self.y_test, self.y_val = data.stratify_train_test_split(independent_variables=independent_variables,
-                                                                                                                      y_column='listing_price',)
+        (self.X_train,
+         self.X_test,
+         self.X_val,
+         self.y_train,
+         self.y_test,
+         self.y_val) = self.data.stratify_train_test_split(
+             y_column='log_listing_price'
+        )
+
+    def _transform_data(self):
+        # Using a sample for testing. If you want to work with the entire dataset, use the following line
+        # self.data.df = base_regression_pipeline(self.data.df)
+        self.data.df = base_regression_pipeline(self.data.df).sample(frac=0.001, replace=True, random_state=1)
 
     def run(self):
+
         # Running SVM
-        svm_results: Type[Bunch] = run_svm(self)
+        # svm_results: Type[Bunch] = run_svm(self)
 
         # Running Random Forest
         rf_results: Type[Bunch] = run_rf(self)
 
         # Generating combined results
         results: Type[Bunch] = Bunch(
-            svm = svm_results.values(),
+            # svm = svm_results.values(),
             rf = rf_results.values()
         )
 
         # Generate visualizations
-        plot_actual_predicted(results, self.y_test)
-        plot_residuals(results, self.y_test)
+        # plot_actual_predicted(results, self.y_test)
+        # plot_residuals(results, self.y_test)
+        # plot_model_evaluation(results)
+        # plot_training_time(results)
 
         return results
