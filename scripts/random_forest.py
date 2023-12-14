@@ -1,23 +1,20 @@
+# Data Manipulation
 from typing import Type
+
+# Scikit learn
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.utils import Bunch
 
-from utils.object import MLModelConfig
-from utils.prediction import two_step_hyperparameter_tuning
-from utils.prediction import print_prediction_summary
+# Load helpers and custom dataset class
+from utils.helpers import two_step_hyperparameter_tuning
+from utils.helpers import print_prediction_summary
 
-def main(model_config: MLModelConfig) -> Type[Bunch]:
+def run_rf(prediction_instance: Type["Prediction"]) -> Type[Bunch]:
     """
     Run a machine learning model using hyperparameter tuning with both GridSearchCV and RandomizedSearchCV.
 
     Parameters:
-    - model_config (object): An object containing data and configurations for model training and testing.
-        - X (array-like): The feature matrix for the entire dataset.
-        - y (array-like): The target values for the entire dataset.
-        - X_train (array-like): The feature matrix for the training dataset.
-        - y_train (array-like): The target values for the training dataset.
-        - X_test (array-like): The feature matrix for the test dataset.
-        - y_test (array-like): The target values for the test dataset.
+    - prediction_instance (Prediction): An object containing data and configurations for model training and testing.
 
     Returns:
     - results (Type[Bund]): A dictionary containing the results of hyperparameter tuning using GridSearchCV and RandomizedSearchCV.
@@ -36,7 +33,7 @@ def main(model_config: MLModelConfig) -> Type[Bunch]:
     rf = RandomForestRegressor()
 
     # Using param_grid for two step hyperparameter tuning with Random Forest
-    output_rf: Type[Bunch] = two_step_hyperparameter_tuning(rf, model_config, param_grid)
+    output_rf: Type[Bunch] = two_step_hyperparameter_tuning(rf, prediction_instance, param_grid)
 
     # Add label to output
     output_rf.label = 'Random Forest'
@@ -46,6 +43,6 @@ def main(model_config: MLModelConfig) -> Type[Bunch]:
     )
 
     # Printing a summary of the results
-    print_prediction_summary('Random Forest', model_config.y_test, output_rf.y_pred)
+    print_prediction_summary('Random Forest', prediction_instance.y_test, output_rf.y_pred)
 
     return output

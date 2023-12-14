@@ -1,24 +1,22 @@
+from __future__ import annotations
+
+# Data Manipulation
 from typing import Type
+
+# Scikit learn
 from sklearn.svm import SVR
-from utils.prediction import two_step_hyperparameter_tuning
 from sklearn.utils import Bunch
 
-from utils.object import MLModelConfig
-from utils.prediction import two_step_hyperparameter_tuning
-from utils.prediction import print_prediction_summary
+# Load helpers and custom dataset class
+from utils.helpers import two_step_hyperparameter_tuning
+from utils.helpers import print_prediction_summary
 
-def main(model_config: MLModelConfig) -> Type[Bunch]:
+def run_svm(prediction_instance: Type["Prediction"]) -> Type[Bunch]:
     """
     Run a machine learning model using hyperparameter tuning with both GridSearchCV and RandomizedSearchCV.
 
     Parameters:
-    - model_config (MLModelConfig): An object containing data and configurations for model training and testing.
-        - X (array-like): The feature matrix for the entire dataset.
-        - y (array-like): The target values for the entire dataset.
-        - X_train (array-like): The feature matrix for the training dataset.
-        - y_train (array-like): The target values for the training dataset.
-        - X_test (array-like): The feature matrix for the test dataset.
-        - y_test (array-like): The target values for the test dataset.
+    - prediction_instance (Prediction): An object containing data and configurations for model training and testing.
 
     Returns:
     - results (Type[Bunch]): A dictionary containing the results of hyperparameter tuning using
@@ -43,9 +41,9 @@ def main(model_config: MLModelConfig) -> Type[Bunch]:
     svr_poly = SVR(kernel="poly")
 
     # Using param_grid for two step hyperparameter tuning with Support Vector Regression
-    output_linear: Type[Bunch] = two_step_hyperparameter_tuning(svr_linear, model_config, param_grid)
-    output_rbf: Type[Bunch] = two_step_hyperparameter_tuning(svr_rbf, model_config, param_grid)
-    output_poly: Type[Bunch] = two_step_hyperparameter_tuning(svr_poly, model_config, param_grid)
+    output_linear: Type[Bunch] = two_step_hyperparameter_tuning(svr_linear, prediction_instance, param_grid)
+    output_rbf: Type[Bunch] = two_step_hyperparameter_tuning(svr_rbf, prediction_instance, param_grid)
+    output_poly: Type[Bunch] = two_step_hyperparameter_tuning(svr_poly, prediction_instance, param_grid)
 
     # Add labels to outputs
     output_linear.label = 'SVR Linear'
@@ -61,6 +59,6 @@ def main(model_config: MLModelConfig) -> Type[Bunch]:
 
     # Printing a summary of the results
     for label, regressor in output_svm.items():
-        print_prediction_summary(f"SVM {label}", model_config.y_test, regressor.y_pred)
+        print_prediction_summary(f"SVM {label}", prediction_instance.y_test, regressor.y_pred)
 
     return output_svm
