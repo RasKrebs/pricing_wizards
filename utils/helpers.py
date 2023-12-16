@@ -29,6 +29,16 @@ def save_model(dictionary, path) -> None:
     else:
         print("No model found in the dictionary.")
 
+
+def load_model(path): 
+    """Loads model from the given path"""
+    with open(path, 'rb') as file:
+        model = pickle.load(file)
+        print(f"Model loaded successfully from {path}")
+        return model
+
+drop_helpers = lambda x: x.loc[:, (x.columns != 'classified_id') & (x.columns != 'listing_price')] 
+
 def print_prediction_summary(label: str, y_true: pd.Series, y_pred: pd.Series) -> None:
     """
     Print a summary of regression evaluation metrics.

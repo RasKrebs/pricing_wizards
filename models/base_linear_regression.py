@@ -1,5 +1,6 @@
 from utils.RegressionEvaluation import regression_accuracy
 from sklearn.linear_model import LinearRegression
+from utils.helpers import drop_helpers
 
 # Model
 def linear_regression(dataset):
@@ -17,10 +18,10 @@ def linear_regression(dataset):
     lr = LinearRegression()
 
     # Fit the model to the training data
-    lr.fit(dataset.X_train, dataset.y_train)
+    lr.fit(drop_helpers(dataset.X_train), dataset.y_train)
 
     # Make predictions on the test data
-    y_pred = lr.predict(dataset.X_test)
+    y_pred = lr.predict(drop_helpers(dataset.X_test))
 
     # Calculate metrics
     r2, mse, mae, rmse = regression_accuracy(y_pred, dataset.y_test, return_metrics=True)
