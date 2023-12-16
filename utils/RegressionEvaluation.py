@@ -2,7 +2,7 @@
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 import numpy as np
 
-def regression_accuracy(prediction:np.array, true_labels:np.array, return_metrics:bool = False):
+def regression_accuracy(prediction:np.array, true_labels:np.array, return_metrics:bool = False, scale_up:bool = False):
     """Function for printing regression metrics
     
 
@@ -10,6 +10,7 @@ def regression_accuracy(prediction:np.array, true_labels:np.array, return_metric
         prediction (np.array): Model predictions.
         true_labels (np.array): Ground truth labels.
         return_metrics (bool, optional): Whether to return metrics. Defaults to False.
+        scale_up (bool, optional): Whether to scale up log scaled predictions and true labels. Defaults to False.
         
     Returns: If specified, returns metrics. Otherwise prints metrics.
         float: r2 score
@@ -17,6 +18,11 @@ def regression_accuracy(prediction:np.array, true_labels:np.array, return_metric
         float: mean absolute error
         float: root mean squared error
     """
+    
+    # Scale up if specified
+    if scale_up:
+        prediction = np.exp(prediction)
+        true_labels = np.exp(true_labels)
 
     # Calculate metrics
     r2 = r2_score(true_labels, prediction)
