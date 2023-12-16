@@ -34,11 +34,10 @@ def base_regression_pipeline(df):
         brand_name = lambda x: x['brand_name'].apply(lambda x: brand_encoding[x]),
         subsubsubcategory_name = lambda x: x['subsubsubcategory_name'].apply(lambda x: subsubsubcategory_encoding[x])
     )
-    
     # Final columns to use
     columns_to_use = ['classified_id','log_listing_price','brand_name','condition_name','subsubsubcategory_name']
     df = df[columns_to_use]
-    
+
     # Return dataframe
     return df
 
