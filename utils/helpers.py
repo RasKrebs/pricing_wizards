@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Scikit learn
+from sklearn.preprocessing import StandardScaler
 from sklearn.base import BaseEstimator
 from sklearn.inspection import permutation_importance
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV, cross_val_score
@@ -74,12 +75,17 @@ def two_step_hyperparameter_tuning(model: Type[BaseEstimator],
     Returns:
     Bunch: A Bunch containing the results of the hyperparameter tuning
     """
-
     X_val = prediction_instance.X_val
-    X_train = prediction_instance.X_train
+    X_train = prediction_instance.X_train.values
     y_train = prediction_instance.y_train
-    X_test = prediction_instance.X_test
+    X_test = prediction_instance.X_test.values
     y_test = prediction_instance.y_test
+
+    # Check if the model is a SVM to apply StandardScaler
+    if isinstance(model, BaseEstimator) and 'SVR' in str(type(model)):
+        # Use StandardScaler for SVM models
+        scaler = StandardScaler()
+        X_train = scaler.fit_transform(X_train)
 
     # Use Random Search as first step of the hyperparameter tuning
     random_search = RandomizedSearchCV(

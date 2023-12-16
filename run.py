@@ -18,8 +18,8 @@ if __name__ == '__main__':
 
     #### LINEAR_REGRESSION ####
 
-    linear_regression = BaseRegression(data)
-    linear_regression.run()
+    # linear_regression = BaseRegression(data)
+    # linear_regression.run()
 
     #### PREDICTION (SVM + RANDOM FOREST) ####
 
@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     #### FEATURE IMPORTANCE ####
 
-    # feature_importance = FeatureImportance(prediction_results)
+    feature_importance = FeatureImportance(prediction_results)
 
     # Ranking feature importances
-    # feature_importance.rank()
+    feature_importance.rank()
