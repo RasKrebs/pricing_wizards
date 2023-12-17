@@ -13,9 +13,8 @@ from utils.helpers import two_step_hyperparameter_tuning
 def svm(dataset: PricingWizardDataset):
     # Defines a set of values to explore during the hyperparameter tuning process
     param_dist: dict = {
-        'C': [0.1, 1, 10],
-        'gamma': [0.01, 0.1, 1],
-        'degree': [2, 3, 4]
+        'C': [0.1, 1, 10, 100, 1000],
+        'gamma': [1, 0.1, 0.01, 0.001, 0.0001],
     }
 
     # Create an SVR linear model
