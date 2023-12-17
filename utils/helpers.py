@@ -53,7 +53,6 @@ def two_step_hyperparameter_tuning(model: Type[BaseEstimator], dataset: PricingW
 
     # Check if the model is a SVM to apply StandardScaler
     if 'SVR' in str(type(model)) or 'LinearSVR' in str(type(model)):
-        print("HERE")
         # Use StandardScaler for SVM models
         scaler = StandardScaler()
         X_train = scaler.fit_transform(X_train)
