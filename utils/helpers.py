@@ -62,7 +62,6 @@ def two_step_hyperparameter_tuning(model: Type[BaseEstimator], dataset: PricingW
         model,
         param_distributions=param_dist,
         scoring='neg_mean_squared_error',
-        cv=5,
         random_state=42,
         n_jobs=-1,
         verbose=3
