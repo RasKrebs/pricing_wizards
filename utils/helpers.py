@@ -25,7 +25,7 @@ import torch
 
 def save_model(dictionary, path, model_type='sklearn') -> None:
     model = dictionary['model']
-    
+
     # Save sklearn model
     if model is not None:
         if model_type == 'sklearn':
@@ -37,16 +37,16 @@ def save_model(dictionary, path, model_type='sklearn') -> None:
             print(f"Model saved successfully at {path}")
     else:
         print("No model found in the dictionary.")
-        
 
-def load_model(path): 
+
+def load_model(path):
     """Loads model from the given path"""
     with open(path, 'rb') as file:
         model = pickle.load(file)
         print(f"Model loaded successfully from {path}")
         return model
 
-drop_helpers = lambda x: x.loc[:, (x.columns != 'classified_id') & (x.columns != 'listing_price') & (x.columns != 'log_listing_price')] 
+drop_helpers = lambda x: x.loc[:, (x.columns != 'classified_id') & (x.columns != 'listing_price') & (x.columns != 'log_listing_price')]
 
 def print_prediction_summary(label: str, y_true: pd.Series, y_pred: pd.Series) -> None:
     """
@@ -113,7 +113,8 @@ def two_step_hyperparameter_tuning(model: Type[BaseEstimator],
         n_iter=10,
         scoring='neg_mean_squared_error',
         cv=5,
-        random_state=42
+        random_state=42,
+        verbose=10
     )
     random_search.fit(X_train, y_train)
 
@@ -129,7 +130,8 @@ def two_step_hyperparameter_tuning(model: Type[BaseEstimator],
         model,
         param_grid=grid_search_params,
         scoring='neg_mean_squared_error',
-        cv=5
+        cv=5,
+        verbose=10
     )
     grid_search.fit(X_train, y_train)
 
