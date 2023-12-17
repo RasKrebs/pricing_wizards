@@ -1,7 +1,7 @@
 # Import torch nn module
 import torch
 import torch.nn as nn
-from utils.NeuralNetHelpers import train, train_step, test
+from utils.NeuralNetHelpers import train, train_step, test, set_device
 from utils.RegressionEvaluation import regression_accuracy
 
 # Neural network architecture
@@ -29,12 +29,7 @@ def regression_network(train_loader, val_loader, test_tensor, test_target):
     model = RegressionNN(next(iter(train_loader))[0].shape[1])
     
     # Determining device
-    if torch.backends.mps.is_available():
-        device = torch.device("mps")
-    elif torch.cuda.is_available():
-        device = torch.device("cuda:0")
-    else:
-        device = torch.device("cpu")
+    device = set_device()
         
     # Move model to device
     model.to(device)
