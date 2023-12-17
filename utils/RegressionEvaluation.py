@@ -38,7 +38,7 @@ def regression_accuracy(prediction:np.array, true_labels:np.array, return_metric
         print('MAE', mae)
         print('RMSE', rmse)
 
-def threshold_accuracy(prediction:np.array, true_labels:np.array, p:int=0.05, return_metrics:bool = False):
+def threshold_accuracy(prediction:np.array, true_labels:np.array, p:int=0.05, return_metrics:bool = False, scale_up:bool = False):
     """Function for computing accuracy given a threshold
 
     Args:
@@ -52,6 +52,11 @@ def threshold_accuracy(prediction:np.array, true_labels:np.array, p:int=0.05, re
     """
     # Function to append wether or not the prediction is within a certain threshold
     output = []
+    
+    # Scale up if specified
+    if scale_up:
+        prediction = np.exp(prediction)
+        true_labels = np.exp(true_labels)
 
     # Loop over all predictions
     for i in range(len(prediction)):
