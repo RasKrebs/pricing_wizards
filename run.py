@@ -6,7 +6,7 @@ from sklearn.utils import Bunch
 
 # Load helpers and custom dataset class
 from utils.Dataloader import PricingWizardDataset
-from utils.Prediction import Prediction
+from utils.prediction import Prediction
 from utils.FeatureImportance import FeatureImportance
 from utils.BaseRegression import BaseRegression
 
