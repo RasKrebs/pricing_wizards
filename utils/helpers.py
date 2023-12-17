@@ -20,14 +20,33 @@ from sklearn.model_selection import RandomizedSearchCV, GridSearchCV, cross_val_
 from sklearn.metrics import mean_squared_error, explained_variance_score, mean_absolute_error, r2_score, mean_squared_log_error, median_absolute_error
 from sklearn.utils import Bunch
 
-def save_model(dictionary, path) -> None:
+# PyTorch
+import torch
+
+def save_model(dictionary, path, model_type='sklearn') -> None:
     model = dictionary['model']
+    
+    # Save sklearn model
     if model is not None:
-        with open(path, 'wb') as file:
-            pickle.dump(model, file)
+        if model_type == 'sklearn':
+            with open(path, 'wb') as file:
+                pickle.dump(model, file)
+                print(f"Model saved successfully at {path}")
+        elif model_type == 'pytorch':
+            torch.save(model.state_dict(), path)
             print(f"Model saved successfully at {path}")
     else:
         print("No model found in the dictionary.")
+        
+
+def load_model(path): 
+    """Loads model from the given path"""
+    with open(path, 'rb') as file:
+        model = pickle.load(file)
+        print(f"Model loaded successfully from {path}")
+        return model
+
+drop_helpers = lambda x: x.loc[:, (x.columns != 'classified_id') & (x.columns != 'listing_price') & (x.columns != 'log_listing_price')] 
 
 def print_prediction_summary(label: str, y_true: pd.Series, y_pred: pd.Series) -> None:
     """
