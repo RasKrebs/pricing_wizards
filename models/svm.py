@@ -19,7 +19,7 @@ def svm(dataset: PricingWizardDataset):
     }
 
     # Create an SVR linear model
-    svr_linear = SVR(kernel="linear")
+    # svr_linear = SVR(kernel="linear")
 
     # Create an SVR linear model
     svr_rbf = SVR(kernel="rbf")
@@ -28,18 +28,18 @@ def svm(dataset: PricingWizardDataset):
     svr_poly = SVR(kernel="poly")
 
     # Using param_grid for two step hyperparameter tuning with Support Vector Regression
-    output_linear: Type[Bunch] = two_step_hyperparameter_tuning(svr_linear, dataset, param_dist)
+    # output_linear: Type[Bunch] = two_step_hyperparameter_tuning(svr_linear, dataset, param_dist)
     output_rbf: Type[Bunch] = two_step_hyperparameter_tuning(svr_rbf, dataset, param_dist)
     output_poly: Type[Bunch] = two_step_hyperparameter_tuning(svr_poly, dataset, param_dist)
 
     # Add labels to outputs
-    output_linear.label = 'SVR Linear'
+    # output_linear.label = 'SVR Linear'
     output_rbf.label = 'SVR RBF'
     output_poly.label = 'SVR Polynomial'
 
     # Generate output with model label
     results: Type[Bunch] = Bunch(
-        linear = output_linear,
+        # linear = output_linear,
         rbf = output_rbf,
         polynomial = output_poly
     )
