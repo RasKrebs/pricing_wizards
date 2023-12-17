@@ -28,6 +28,7 @@ def price_encoding(df, column, listing_price_column='log_listing_price'):
     
     return df
 
+
 def filter_rare_categories(df, col, replacement, minimum=30):
     """
     Filter rare subsubsub categories
@@ -50,7 +51,6 @@ def filter_rare_categories(df, col, replacement, minimum=30):
     df.loc[df[df.subsubsubcategory_name.isin(maps.keys())].index, 'subsubsubcategory_name'] = df[df.subsubsubcategory_name.isin(maps.keys())].subsubsubcategory_name.map(maps)
     
     return df
-
 
 
 # Data Preperation for Regression
@@ -89,7 +89,7 @@ def ridge_regression_pipeline(df):
     df = pd.get_dummies(df, columns=['brand_name', 'subsubsubcategory_name'])
     
     # Extracting infrequent brands
-    infrequent_brands = (df[[col for col in df.columns if 'brand' in col]].sum(axis=0).sort_values(ascending=True) < 50)
+    infrequent_brands = (df[[col for col in df.columns if 'brand' in col]].sum(axis=0).sort_values(ascending=True) < 30)
     infrequent_brands = infrequent_brands[infrequent_brands == True].index
 
     # Assigning 'other' to brands that are in infrequent_brands
