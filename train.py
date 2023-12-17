@@ -9,6 +9,7 @@ from models import base_linear_regression, regularized_regression, regression_ne
 import argparse
 import torch
 from torch.utils.data import TensorDataset, DataLoader
+from sklearn.preprocessing import MinMaxScaler
 
 # Argument Parser
 argParser = argparse.ArgumentParser()
@@ -84,7 +85,17 @@ if args.name == 'neural_network':
     # Apply ridge regression data preparation
     print('Applying data preparation...')    
     data.apply_function(ridge_regression_pipeline)
+    
+    # Standard Scaling
+    scaler = MinMaxScaler()
+    X = scaler.fit_transform(drop_helpers(data.df))
+    
+    # Assigning X to data.df
+    data.df[drop_helpers(data.df).columns] = X
+    
     print('Done.')
+    
+    
     
     # Split data
     data.stratify_train_test_split(y_column='log_listing_price', 
@@ -95,6 +106,7 @@ if args.name == 'neural_network':
     X_train_tensor = torch.tensor(drop_helpers(data.X_train).to_numpy(), dtype=torch.float32)
     X_test_tensor = torch.tensor(drop_helpers(data.X_test).to_numpy(), dtype=torch.float32)
     X_val_tensor = torch.tensor(drop_helpers(data.X_val).to_numpy(), dtype=torch.float32)
+    
     y_train_tensor = torch.tensor(data.y_train, dtype=torch.float32)
     y_test_tensor = torch.tensor(data.y_test, dtype=torch.float32)
     y_val_tensor = torch.tensor(data.y_val, dtype=torch.float32)
@@ -116,6 +128,6 @@ if args.name == 'neural_network':
     print('RMSE', results['rmse'])
 
     # Save model
-    path = 'models/pickled_models/regression_neural_net.pkl'
+    path = 'models/pickled_models/regression_neural_net.pt'
     save_model(results, path, model_type='pytorch')
 
