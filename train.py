@@ -26,7 +26,7 @@ else:
     print('Training model:', args.name)
 
 # Load data
-data = PricingWizardDataset(train_size=0.001)
+data = PricingWizardDataset()
 
 
 # Base Regression
