@@ -10,7 +10,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.base import BaseEstimator
 from sklearn.inspection import permutation_importance
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV, cross_val_score
-from sklearn.metrics import mean_squared_error, explained_variance_score, mean_absolute_error, r2_score, mean_squared_log_error, median_absolute_error
+from sklearn.metrics import mean_squared_error
 from sklearn.utils import Bunch
 
 # Utils
