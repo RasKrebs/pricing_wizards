@@ -64,7 +64,7 @@ def two_step_hyperparameter_tuning(model: Type[BaseEstimator], dataset: PricingW
         scoring='neg_mean_squared_error',
         cv=5,
         random_state=42,
-        n_jobs=64,
+        n_jobs=-1,
         verbose=3
     )
     random_search.fit(X_train, y_train)
@@ -82,7 +82,7 @@ def two_step_hyperparameter_tuning(model: Type[BaseEstimator], dataset: PricingW
         param_grid=grid_search_params,
         scoring='neg_mean_squared_error',
         cv=5,
-        n_jobs=64,
+        n_jobs=-1,
         verbose=3
     )
     grid_search.fit(X_train, y_train)
