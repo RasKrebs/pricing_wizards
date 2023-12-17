@@ -52,10 +52,10 @@ def two_step_hyperparameter_tuning(model: Type[BaseEstimator], dataset: PricingW
     y_test = dataset.y_test
 
     # Check if the model is a SVM to apply StandardScaler
-    if isinstance(model, BaseEstimator) and 'SVR' in str(type(model)):
-        # Use StandardScaler for SVM models
-        scaler = StandardScaler()
-        X_train = scaler.fit_transform(X_train)
+    # if isinstance(model, BaseEstimator) and 'SVR' in str(type(model)):
+    #     # Use StandardScaler for SVM models
+    #     scaler = StandardScaler()
+    #     X_train = scaler.fit_transform(X_train)
 
     # Use Random Search as first step of the hyperparameter tuning
     random_search = RandomizedSearchCV(
