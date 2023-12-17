@@ -1,6 +1,17 @@
 import torch
 import numpy as np
 
+def set_device():
+    # Determine device
+    if torch.backends.mps.is_available():
+        device = torch.device("mps")
+    elif torch.cuda.is_available():
+        device = torch.device("cuda:0")
+    else:
+        device = torch.device("cpu")
+
+    return device
+
 def train_step(model, criterion, optimizer, train_loader, device):
     """
     Trains the model for one epoch.
@@ -118,8 +129,8 @@ def test(model, test_tensors, device):
     # Set model to eval mode
     model.eval()
     
-    # Save loss
-    losses = []
+    # Move model to device
+    model = model.to(device)
     
     # Test model
     with torch.no_grad():
