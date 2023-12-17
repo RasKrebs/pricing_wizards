@@ -1,5 +1,6 @@
 # Data Manipulation
 from typing import Type
+import numpy as np
 
 # Scikit learn
 from sklearn.svm import SVR
@@ -13,8 +14,8 @@ from utils.helpers import two_step_hyperparameter_tuning
 def svm(dataset: PricingWizardDataset):
     # Defines a set of values to explore during the hyperparameter tuning process
     param_dist: dict = {
-        'C': [1, 10, 100, 1000],
-        'gamma': [0.1, 0.01, 0.001, 0.0001],
+        "C": [1e0, 1e1, 1e2, 1e3],
+        'epsilon': [0.1, 0.2, 0.5, 0.3]
     }
 
     # Create an SVR linear model
