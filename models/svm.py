@@ -14,7 +14,7 @@ from utils.helpers import two_step_hyperparameter_tuning
 def svm(dataset: PricingWizardDataset):
     # Defines a set of values to explore during the hyperparameter tuning process
     param_dist: dict = {
-        "C": [1e0, 1e1, 1e2, 1e3],
+        'C': [0.1, 1, 10, 100],
         'epsilon': [0.1, 0.2, 0.5, 0.3]
     }
 
