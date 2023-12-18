@@ -13,9 +13,21 @@ from utils.helpers import two_step_hyperparameter_tuning
 
 def svm(dataset: PricingWizardDataset):
     # Defines a set of values to explore during the hyperparameter tuning process
-    param_dist: dict = {
+    linear_param_dist = {
+        'C': [0.1, 1, 10, 100],
+        'epsilon': [0.01, 0.1, 0.5, 1.0],
+    }
+
+    poly_param_dist = {
         'C': [0.1, 1, 10],
-        'epsilon': [0.1, 0.2, 0.3]
+        'epsilon': [0.01, 0.1, 0.5],
+        'degree': [2, 3, 4],
+    }
+
+    rbf_param_dist = {
+        'C': [0.1, 1, 10],
+        'epsilon': [0.01, 0.1, 0.5],
+        'gamma': ['scale', 'auto', 0.1],
     }
 
     # Create an SVR linear model
@@ -28,9 +40,9 @@ def svm(dataset: PricingWizardDataset):
     svr_poly = SVR(kernel="poly")
 
     # Using param_grid for two step hyperparameter tuning with Support Vector Regression
-    output_linear: Type[Bunch] = two_step_hyperparameter_tuning(svr_linear, dataset, param_dist)
-    output_rbf: Type[Bunch] = two_step_hyperparameter_tuning(svr_rbf, dataset, param_dist)
-    output_poly: Type[Bunch] = two_step_hyperparameter_tuning(svr_poly, dataset, param_dist)
+    output_linear: Type[Bunch] = two_step_hyperparameter_tuning(svr_linear, dataset, linear_param_dist)
+    output_rbf: Type[Bunch] = two_step_hyperparameter_tuning(svr_rbf, dataset, rbf_param_dist)
+    output_poly: Type[Bunch] = two_step_hyperparameter_tuning(svr_poly, dataset, poly_param_dist)
 
     # Add labels to outputs
     output_linear.label = 'SVR Linear'
