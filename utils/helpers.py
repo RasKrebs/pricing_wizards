@@ -45,6 +45,25 @@ def load_model(path):
 drop_helpers = lambda x: x.loc[:, (x.columns != 'classified_id') & (x.columns != 'listing_price') & (x.columns != 'log_listing_price')]
 
 def two_step_hyperparameter_tuning(model: Type[BaseEstimator], dataset: PricingWizardDataset, param_dist: dict) -> Type[Bunch]:
+    """
+    Perform a two-step hyperparameter tuning process using Randomized Search and Grid Search.
+
+    Parameters:
+    - model (Type[BaseEstimator]): The machine learning model to be tuned.
+    - dataset (PricingWizardDataset): The dataset containing training and testing data.
+    - param_dist (dict): The hyperparameter distribution for Randomized Search.
+
+    Returns:
+    Type[Bunch]: A Bunch object containing the following attributes:
+        - params: The best hyperparameters obtained from Grid Search.
+        - model: The trained model with the best hyperparameters.
+        - feature_importances: A list of tuples containing feature names and their importances.
+        - training_time: The time taken to train the final model in seconds.
+        - mse_mean_cv: The mean cross-validated mean squared error.
+        - mse_test: The mean squared error on the test set.
+        - y_pred: The predicted values on the test set.
+    """
+
     X_train = drop_helpers(dataset.X_train).values
     y_train = dataset.y_train
     X_test = drop_helpers(dataset.X_test).values
@@ -126,7 +145,16 @@ def two_step_hyperparameter_tuning(model: Type[BaseEstimator], dataset: PricingW
     return output
 
 def set_feature_importances(results) -> None:
-    # Transform the feature importances to a pandas dataframe
+    """
+    Create a pandas DataFrame from the 'feature_importances' key of the results dictionary and print it.
+
+    Parameters:
+    - results (dict): The dictionary containing the results, with a 'feature_importances' key.
+
+    Returns:
+    None
+    """
+
     df = pd.DataFrame(results['feature_importances'][1:], columns=results['feature_importances'][0])
 
     print(df)

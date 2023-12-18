@@ -11,6 +11,26 @@ from utils.RegressionEvaluation import regression_accuracy
 from utils.helpers import two_step_hyperparameter_tuning
 
 def random_forest(dataset: PricingWizardDataset) -> Type[Bunch]:
+    """
+    Perform hyperparameter tuning and evaluation for a Random Forest regression model.
+
+    Parameters:
+    - dataset (PricingWizardDataset): The dataset containing training and testing data.
+
+    Returns:
+    Type[Bunch]: A Bunch object containing the Random Forest model with hyperparameter tuning results and evaluation metrics.
+    The Bunch object has the following attributes:
+        - model: Trained Random Forest model with the best hyperparameters.
+        - r2: R-squared.
+        - mse: Mean squared error.
+        - mae: Mean absolute error.
+        - rmse: Root mean squared error.
+        - training_time: Time taken to train the final model in seconds.
+        - mse_mean_cv: Mean cross-validated mean squared error.
+        - mse_test: Mean squared error on the test set.
+        - feature_importances: List of tuples containing feature names and their importances.
+    """
+
     # Defines a set of values to explore during the hyperparameter tuning process
     param_dist: dict = {
         'n_estimators': [50, 100, 200],
