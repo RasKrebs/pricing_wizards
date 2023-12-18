@@ -1,9 +1,9 @@
 # Data Manipulation
 import numpy as np
 import time
-import pandas as pd
 from typing import Type
 import pickle
+import pandas as pd
 
 # Scikit learn
 from sklearn.preprocessing import StandardScaler
@@ -45,10 +45,9 @@ def load_model(path):
 drop_helpers = lambda x: x.loc[:, (x.columns != 'classified_id') & (x.columns != 'listing_price') & (x.columns != 'log_listing_price')]
 
 def two_step_hyperparameter_tuning(model: Type[BaseEstimator], dataset: PricingWizardDataset, param_dist: dict) -> Type[Bunch]:
-    X_val = dataset.X
-    X_train = dataset.X_train.values
+    X_train = drop_helpers(dataset.X_train).values
     y_train = dataset.y_train
-    X_test = dataset.X_test.values
+    X_test = drop_helpers(dataset.X_test).values
     y_test = dataset.y_test
 
     # Check if the model is a SVM to apply StandardScaler
@@ -117,7 +116,7 @@ def two_step_hyperparameter_tuning(model: Type[BaseEstimator], dataset: PricingW
     output: Type[Bunch] = Bunch(
         params = best_params_grid,
         model = final_model,
-        feature_importances = list(zip(X_val.columns, feature_importances)),
+        feature_importances = list(zip(drop_helpers(dataset.X_train).columns, feature_importances)),
         training_time = training_time,
         mse_mean_cv = mse_mean_cv,
         mse_test = mse_test,
@@ -125,3 +124,9 @@ def two_step_hyperparameter_tuning(model: Type[BaseEstimator], dataset: PricingW
     )
 
     return output
+
+def set_feature_importances(results) -> None:
+    # Transform the feature importances to a pandas dataframe
+    df = pd.DataFrame(results['feature_importances'][1:], columns=results['feature_importances'][0])
+
+    print(df)

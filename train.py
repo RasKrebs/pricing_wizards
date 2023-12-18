@@ -4,7 +4,7 @@
 import pandas as pd
 from utils.Dataloader import PricingWizardDataset
 from utils.DataTransformation import base_regression_pipeline, ridge_regression_pipeline
-from utils.helpers import save_model, drop_helpers
+from utils.helpers import save_model, drop_helpers, set_feature_importances
 from models import base_linear_regression, regularized_regression, regression_neural_network, svm, random_forest
 import argparse
 import torch
@@ -165,6 +165,9 @@ if args.name == 'svm':
         path = f'models/pickled_models/prediction_{"_".join(params.label.lower().split())}.pkl'
         save_model(params.accuracy, path)
 
+    for _, params in results.items():
+        set_feature_importances(params)
+
     data.reset_dataset()
 
 # Random Forest
@@ -192,6 +195,8 @@ if args.name == 'random_forest':
     ]
 
     print(tabulate(table, headers=["Metric", "Value"], tablefmt="pretty", numalign="right", stralign="right", colalign=("left", "right")))
+
+    set_feature_importances(results)
 
     # Save model
     path = 'models/pickled_models/prediction_random_forest.pkl'
