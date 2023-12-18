@@ -8,7 +8,7 @@ from sklearn.utils import Bunch
 # Load helpers and custom dataset class
 from utils.Dataloader import PricingWizardDataset
 from utils.RegressionEvaluation import regression_accuracy
-from utils.helpers import two_step_hyperparameter_tuning, save_model
+from utils.helpers import two_step_hyperparameter_tuning
 
 def random_forest(dataset: PricingWizardDataset) -> Type[Bunch]:
     # Defines a set of values to explore during the hyperparameter tuning process
