@@ -11,6 +11,21 @@ from utils.RegressionEvaluation import regression_accuracy
 from utils.helpers import two_step_hyperparameter_tuning
 
 def svm(dataset: PricingWizardDataset) -> Type[Bunch]:
+    """
+    Perform hyperparameter tuning and evaluation for Support Vector Regression (SVR) models.
+
+    Parameters:
+    - dataset (PricingWizardDataset): The dataset containing training and testing data.
+
+    Returns:
+    Type[Bunch]: A Bunch object containing SVR models with hyperparameter tuning results and evaluation metrics.
+    The Bunch object has the following attributes:
+        - linear: SVR with linear kernel results and evaluation metrics.
+        - rbf: SVR with radial basis function (RBF) kernel results and evaluation metrics.
+        - polynomial: SVR with polynomial kernel results and evaluation metrics.
+
+    """
+
     # Defines a set of values to explore during the hyperparameter tuning process
     linear_param_dist = {
         'C': [0.1, 1, 10, 100],
