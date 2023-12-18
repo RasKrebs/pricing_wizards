@@ -65,7 +65,6 @@ def two_step_hyperparameter_tuning(model: Type[BaseEstimator], dataset: PricingW
         scoring='neg_mean_squared_error',
         random_state=42,
         n_jobs=-1,
-        max_iter=-1,
         verbose=3
     )
     random_search.fit(X_train, y_train)
