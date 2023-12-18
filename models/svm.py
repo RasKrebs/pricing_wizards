@@ -1,6 +1,5 @@
 # Data Manipulation
 from typing import Type
-import numpy as np
 
 # Scikit learn
 from sklearn.svm import SVR, LinearSVR
@@ -11,7 +10,7 @@ from utils.Dataloader import PricingWizardDataset
 from utils.RegressionEvaluation import regression_accuracy
 from utils.helpers import two_step_hyperparameter_tuning
 
-def svm(dataset: PricingWizardDataset):
+def svm(dataset: PricingWizardDataset) -> Type[Bunch]:
     # Defines a set of values to explore during the hyperparameter tuning process
     linear_param_dist = {
         'C': [0.1, 1, 10, 100],
@@ -40,20 +39,20 @@ def svm(dataset: PricingWizardDataset):
     svr_poly = SVR(kernel="poly")
 
     # Using param_grid for two step hyperparameter tuning with Support Vector Regression
-    # output_linear: Type[Bunch] = two_step_hyperparameter_tuning(svr_linear, dataset, linear_param_dist)
+    output_linear: Type[Bunch] = two_step_hyperparameter_tuning(svr_linear, dataset, linear_param_dist)
     output_rbf: Type[Bunch] = two_step_hyperparameter_tuning(svr_rbf, dataset, rbf_param_dist)
-    # output_poly: Type[Bunch] = two_step_hyperparameter_tuning(svr_poly, dataset, poly_param_dist)
+    output_poly: Type[Bunch] = two_step_hyperparameter_tuning(svr_poly, dataset, poly_param_dist)
 
     # Add labels to outputs
-    # output_linear.label = 'SVR Linear'
+    output_linear.label = 'SVR Linear'
     output_rbf.label = 'SVR RBF'
-    # output_poly.label = 'SVR Polynomial'
+    output_poly.label = 'SVR Polynomial'
 
     # Generate output with model label
     results: Type[Bunch] = Bunch(
-        # linear = output_linear,
+        linear = output_linear,
         rbf = output_rbf,
-        # polynomial = output_poly
+        polynomial = output_poly
     )
 
     for _, params in results.items():
