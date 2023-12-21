@@ -3,6 +3,10 @@
 
 This is a repository for all programming related assets used in the exam project, Pricing Wizards, for the course Data Mining at ITU.
 
+### Usage
+
+To run code, please place the dataset from the uploaded .zip folder in your local data folder. The background is that due to data being proprietary, we may not upload it to this public GitHub repo.
+
 ### Motivation
 
 Given the recommendation of a plain colab link, the format of this deliverable may come as a surprise. As outlined in the Introduction of the accompanying report, the dataset was selected to apply the Data Mining techniques learned in the course in a real-life setting. In this same vein, we collaborated in GitHub and followed other coding best practices, as visible in this folder, like
