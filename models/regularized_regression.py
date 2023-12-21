@@ -7,7 +7,7 @@ import numpy as np
 # Model
 def regularized_regression(dataset, n_jobs=1):
     """
-    Run a machine learning model using hyperparameter tuning with both GridSearchCV and RandomizedSearchCV.
+    Build a regularized regression model using GridSearchCV.
 
     Parameters:
     - dataset (object): An object containing data and configurations for model training and testing.

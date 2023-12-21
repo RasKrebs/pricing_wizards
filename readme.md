@@ -21,12 +21,24 @@ Given the recommendation of a plain colab link, the format of this deliverable m
 
 ### Folder Structure
 
-- `/data`: Directory to store datasets
-- `/models`: Directory for python model script
+- `/data`: Directory to store dataset
+- `/models`: Directory for python model script. These script are referenced when running training, and automize the training process for these
     - `/pickled_models`: Storage for pickled versions of trained models
 - `/notebooks`: Used for training of models and data exploration
 - `/scripts`: Used to store python scripts
 - `/utils`: Helper functions
+
+
+### Explore Results
+If you wish to explore modeling results, please refer to the validation notebook in the root of the repository. This notebook has been created to combine and display all the results of our optimized models. 
+
+To train a model from scratch, based on the best defined preprocessing method, please run:
+```ssh
+> python train.py --name <one of: base_regression, regularized_regression, neural_network, svm, random_forest>
+```
+
+To explore the methodology and process applied for training our models, please refer to the notebooks folder, and open the notebook associated to our models. In here you will also find the preprocessing, exploratory data analysis and outlier detection notebooks, that prepared the data.
+
 
 ### Mapping Methodology to Repo
 

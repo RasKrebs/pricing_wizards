@@ -16,7 +16,7 @@ class PricingWizardDataset:
                  preprocess = True,
                  outlier_iqr_scale = 2) -> None:
         """
-        Data extraction and partioning class.
+        Data loading, preprocessing and subsetting class.
 
         Class for extracting Trendsales data for modeling in Pricing Wizards exam Project. The class should simplify the process of passing data to models.
 

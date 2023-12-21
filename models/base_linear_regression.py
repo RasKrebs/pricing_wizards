@@ -5,7 +5,7 @@ from utils.helpers import drop_helpers
 # Model
 def linear_regression(dataset):
     """
-    Run a machine learning model using hyperparameter tuning with both GridSearchCV and RandomizedSearchCV.
+    A function to create a Linear Regression model and evaluate it.
 
     Parameters:
     - dataset (object): An object containing data and configurations for model training and testing.
