@@ -13,6 +13,8 @@ Given the recommendation of a plain colab link, the format of this deliverable m
 
 ### Project Methodology
 
+![Alt text](workflow.png)
+
 ### Folder Structure
 
 - `/data`: Directory to store datasets
