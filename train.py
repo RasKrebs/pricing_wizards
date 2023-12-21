@@ -53,8 +53,6 @@ if args.name == 'base_regression':
     path = 'models/pickled_models/base_regression.pkl'
     save_model(results, path)
 
-data.reset_dataset()
-
 
 # Regularized Regression
 if args.name == 'regularized_regression':
